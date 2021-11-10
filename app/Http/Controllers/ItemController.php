@@ -17,11 +17,7 @@ class ItemController extends Controller
 	{
 		$page = $request->query('page') ? intval($request->query('page')) : 0;
 		$name = $request->query('name') ? $request->query('name') : '';
-		$barcode = $request->query('barcode') ? $request->query('barcode') : null;
 		$sort = $request->query('sort') ? $request->query('sort') : 'exp-asc';
-		if ($barcode) {
-			return Item::where('barcode', $barcode)->get();
-		}
 		$query = Item::where('name', 'like', "%{$name}%");
 		switch ($sort) {
 			case 'name-asc':

@@ -33,14 +33,6 @@ class UserController extends Controller
 		return response($response, 201);
 	}
 
-	public function logout(User $user)
-	{
-		$user->tokens()->delete();
-
-		return [
-			'message' => 'Logged out'
-		];
-	}
 
 	public function login(Request $request)
 	{
@@ -62,10 +54,55 @@ class UserController extends Controller
 		$token = $user->createToken('myapptoken')->plainTextToken;
 
 		$response = [
-			'user' => $user,
+			'user' => [
+				'name' => $user->name,
+				'email' => $user->email
+			],
 			'token' => $token
 		];
 
 		return response($response, 201);
+	}
+
+	public function changePassword(Request $request)
+	{
+		$field = $request->validate([
+			'email' => 'required|string',
+			'password' => 'required|string|confirmed'
+		]);
+
+		$user = User::where('email', $field['email'])->first();
+
+		// Check password
+		if (!$user || !Hash::check($field['password'], $user->password)) {
+			return response([
+				'message' => 'Wrong email or password!'
+			]);
+		}
+		$user->update([
+			'password' => bcrypt($field['password']),
+		]);
+		$user->tokens()->delete();
+
+		$token = $user->createToken('myapptoken')->plainTextToken;
+
+		$response = [
+			'user' => [
+				'name' => $user->name,
+				'email' => $user->email
+			],
+			'token' => $token
+		];
+
+		return response($response, 201);
+	}
+
+	public function logout(User $user)
+	{
+		$user->tokens()->delete();
+
+		return [
+			'message' => 'Logged out'
+		];
 	}
 }
