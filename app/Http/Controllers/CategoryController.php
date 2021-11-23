@@ -26,11 +26,12 @@ class CategoryController extends Controller
 	public function store(Request $request)
 	{
 		$request->validate([
-			'name' => 'required|unique:category',
+			'name' => 'required|unique:categories',
 			'expire_warning_limit' => 'required',
 			'first_default_notification' => 'required',
 			'second_default_notification' => 'required',
 			'third_default_notification' => 'required',
+			'position' => 'required',
 		]);
 
 		return Category::create($request->all());

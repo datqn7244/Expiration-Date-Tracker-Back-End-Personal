@@ -18,12 +18,14 @@ use App\Http\Controllers\UserController;
 |
 */
 
+
+
 // Products route
 Route::prefix('/v1/products')->group(function () {
 	// Public Products 
-	Route::get('/', [ProductController::class, 'index']);
+	// Route::get('/', [ProductController::class, 'index']);
 	Route::get('/search', [ProductController::class, 'findByName']);
-	Route::get('/{product}', [ProductController::class, 'show']);
+	// Route::get('/{product}', [ProductController::class, 'show']);
 
 	// Protected Products
 	Route::middleware(['auth:sanctum'])->group(function () {
@@ -32,17 +34,17 @@ Route::prefix('/v1/products')->group(function () {
 		Route::delete('/{product}', [ProductController::class, 'destroy']);
 	});
 });
-Route::prefix('/v1/products')->group(function () {
-	// Public Products 
-	Route::get('/', [ProductController::class, 'index']);
-	Route::get('/search', [ProductController::class, 'findByName']);
-	Route::get('/{product}', [ProductController::class, 'show']);
+Route::apiResource('/v1/products', ProductController::class)->only(['index', 'show']);
+Route::prefix('/v1/items')->group(function () {
+	// Public Items 
+	Route::get('/', [ItemController::class, 'index']);
+	Route::get('/{item}', [ItemController::class, 'show']);
 
-	// Protected Products
+	// Protected Items
 	Route::middleware(['auth:sanctum'])->group(function () {
-		Route::post('/', [ProductController::class, 'store']);
-		Route::put('/{product}', [ProductController::class, 'update']);
-		Route::delete('/{product}', [ProductController::class, 'destroy']);
+		Route::post('/', [ItemController::class, 'store']);
+		Route::put('/{item}', [ItemController::class, 'update']);
+		Route::delete('/{item}', [ItemController::class, 'destroy']);
 	});
 });
 Route::prefix('/v1/categories')->group(function () {
@@ -64,19 +66,18 @@ Route::prefix('/v1/tags')->group(function () {
 	// Protected Products
 	Route::middleware(['auth:sanctum'])->group(function () {
 		Route::post('/', [TagController::class, 'store']);
-		Route::put('/{id}', [TagController::class, 'update']);
-		Route::delete('/{id}', [TagController::class, 'destroy']);
+		Route::put('/{tag}', [TagController::class, 'update']);
+		Route::delete('/{tag}', [TagController::class, 'destroy']);
 	});
 });
 
 // Users Route
 Route::post('/v1/register', [UserController::class, "register"]);
 Route::post('/v1/signin', [UserController::class, "login"]);
-Route::middleware('auth:sanctum')->group(function(){
+Route::middleware('auth:sanctum')->group(function () {
 	Route::get('/v1/signout', [UserController::class, "logout"]);
 	Route::post('/v1/change_password', [UserController::class, "changePassword"]);
-
-})
+});
 // Route::resource('/v1/products', ProductController::class);
 // middleware('auth:sanctum')->
 

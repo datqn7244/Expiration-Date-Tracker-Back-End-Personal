@@ -21,12 +21,12 @@ class Product extends Model
 		'price' => 1
 	];
 
-	public function category()
+	public function categories()
 	{
 		return $this->belongsTo(Category::class);
 	}
 
-	public function item()
+	public function items()
 	{
 		return $this->hasMany(Item::class);
 	}

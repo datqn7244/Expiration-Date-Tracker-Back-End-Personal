@@ -16,9 +16,8 @@ class ItemController extends Controller
 	public function index(Request $request)
 	{
 		$page = $request->query('page') ? intval($request->query('page')) : 0;
-		$name = $request->query('name') ? $request->query('name') : '';
 		$sort = $request->query('sort') ? $request->query('sort') : 'exp-asc';
-		$query = Item::where('name', 'like', "%{$name}%");
+		$query = Item::select();
 		switch ($sort) {
 			case 'name-asc':
 				$query = $query->orderBy('name', 'asc');
@@ -53,9 +52,11 @@ class ItemController extends Controller
 		$request->validate([
 			'product_id' => 'required',
 		]);
-		$request->merge([
-			'expire_date' => today()
-		]);
+		if (!$request->input('expire_date')) {
+			$request->merge([
+				'expire_date' => today()
+			]);
+		}
 		return Item::create($request->all());
 	}
 

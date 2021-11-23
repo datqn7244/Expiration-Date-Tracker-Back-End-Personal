@@ -64,17 +64,17 @@ class UserController extends Controller
 		return response($response, 201);
 	}
 
-	public function changePassword(Request $request)
+	public function changePassword(Request $request, User $user)
 	{
 		$field = $request->validate([
-			'email' => 'required|string',
+			'old_password' => 'required|string',
 			'password' => 'required|string|confirmed'
 		]);
 
-		$user = User::where('email', $field['email'])->first();
-
+		// $user = User::where('email', $field['email'])->first();
+		$user = auth()->user();
 		// Check password
-		if (!$user || !Hash::check($field['password'], $user->password)) {
+		if (!$user || !Hash::check($field['old_password'], $user->password)) {
 			return response([
 				'message' => 'Wrong email or password!'
 			]);

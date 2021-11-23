@@ -16,7 +16,7 @@ class CreateItemsTable extends Migration
 		Schema::create('items', function (Blueprint $table) {
 			$table->id();
 			$table->foreignId('product_id')->constrained();
-			$table->foreignId('tag_id')->constrained()->nullable();
+			$table->foreignId('tag_id')->nullable()->constrained();
 			$table->date('expire_date');
 			$table->decimal('quantity', $precision = 8, $scale = 2)->nullable();
 			$table->string('quantity_unit')->nullable();

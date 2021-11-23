@@ -12,7 +12,7 @@ class Tag extends Model
 		'name',
 		'color'
 	];
-	public function item()
+	public function items()
 	{
 		return $this->hasMany(Item::class);
 	}

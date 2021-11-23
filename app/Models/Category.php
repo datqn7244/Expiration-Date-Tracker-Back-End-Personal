@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model
 {
 	use HasFactory;
+
+	protected $table = 'api.categories';
+
 	protected $fillable = [
 		'name',
 		'expire_warning_limit',
@@ -17,7 +20,7 @@ class Category extends Model
 		'position',
 		'color',
 	];
-	public function product()
+	public function products()
 	{
 		return $this->hasMany(Product::class);
 	}
