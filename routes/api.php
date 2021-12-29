@@ -6,7 +6,6 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\ItemController;
-use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,24 +23,25 @@ use App\Http\Controllers\UserController;
 Route::prefix('/v1/products')->group(function () {
 	// Public Products 
 	// Route::get('/', [ProductController::class, 'index']);
-	Route::get('/search', [ProductController::class, 'findByName']);
 	// Route::get('/{product}', [ProductController::class, 'show']);
 
 	// Protected Products
 	Route::middleware(['auth:sanctum'])->group(function () {
+		Route::get('/search', [ProductController::class, 'findByName']);
 		Route::post('/', [ProductController::class, 'store']);
 		Route::put('/{product}', [ProductController::class, 'update']);
 		Route::delete('/{product}', [ProductController::class, 'destroy']);
+		Route::apiResource('/', ProductController::class)->only(['index', 'show']);
 	});
 });
-Route::apiResource('/v1/products', ProductController::class)->only(['index', 'show']);
 Route::prefix('/v1/items')->group(function () {
 	// Public Items 
-	Route::get('/', [ItemController::class, 'index']);
-	Route::get('/{item}', [ItemController::class, 'show']);
 
 	// Protected Items
 	Route::middleware(['auth:sanctum'])->group(function () {
+		// Route::apiResource('/', ItemController::class)->only(['index', 'show']);
+		Route::get('/', [ItemController::class, 'index']);
+		Route::get('/{item}', [ItemController::class, 'show']);
 		Route::post('/', [ItemController::class, 'store']);
 		Route::put('/{item}', [ItemController::class, 'update']);
 		Route::delete('/{item}', [ItemController::class, 'destroy']);
@@ -49,11 +49,11 @@ Route::prefix('/v1/items')->group(function () {
 });
 Route::prefix('/v1/categories')->group(function () {
 	// Public Categories 
-	Route::get('/', [CategoryController::class, 'index']);
 	// Route::get('/{category}', [CategoryController::class, 'show']);
 
 	// Protected Categories
 	Route::middleware(['auth:sanctum'])->group(function () {
+		Route::get('/', [CategoryController::class, 'index']);
 		Route::post('/', [CategoryController::class, 'store']);
 		Route::put('/{category}', [CategoryController::class, 'update']);
 		Route::delete('/{category}', [CategoryController::class, 'destroy']);
@@ -61,26 +61,12 @@ Route::prefix('/v1/categories')->group(function () {
 });
 Route::prefix('/v1/tags')->group(function () {
 	// Public Products 
-	Route::get('/', [TagController::class, 'index']);
 
 	// Protected Products
 	Route::middleware(['auth:sanctum'])->group(function () {
+		Route::get('/', [TagController::class, 'index']);
 		Route::post('/', [TagController::class, 'store']);
 		Route::put('/{tag}', [TagController::class, 'update']);
 		Route::delete('/{tag}', [TagController::class, 'destroy']);
 	});
 });
-
-// Users Route
-Route::post('/v1/register', [UserController::class, "register"]);
-Route::post('/v1/signin', [UserController::class, "login"]);
-Route::middleware('auth:sanctum')->group(function () {
-	Route::get('/v1/signout', [UserController::class, "logout"]);
-	Route::post('/v1/change_password', [UserController::class, "changePassword"]);
-});
-// Route::resource('/v1/products', ProductController::class);
-// middleware('auth:sanctum')->
-
-// Route::group(['prefix' => '/v2/products', 'middleware' => ['auth:sanctum']], function () {
-// 	Route::get('/', [ProductController::class, 'index']);
-// });

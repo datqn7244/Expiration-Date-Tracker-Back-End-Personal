@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-	return view('welcome');
+// Users Route
+// Route::post('/v1/register', [UserController::class, "register"]);
+Route::prefix('api/v1/')->group(function () {
+	Route::post('signin', [UserController::class, "login"]);
+	Route::middleware('auth:sanctum')->group(function () {
+		Route::get('signout', [UserController::class, "logout"]);
+		Route::post('change_password', [UserController::class, "changePassword"]);
+	});
 });

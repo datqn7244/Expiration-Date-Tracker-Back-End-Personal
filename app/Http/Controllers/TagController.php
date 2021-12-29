@@ -29,7 +29,7 @@ class TagController extends Controller
 			'name' => 'required|unique:tags',
 		]);
 
-		return Tag::create($request->all());
+		return Tag::create($request->validated());
 	}
 
 	/**
@@ -54,7 +54,7 @@ class TagController extends Controller
 	{
 		$tag = Tag::find($id);
 
-		$tag->update($request->all());
+		$tag->update($request->validated());
 		return $tag;
 	}
 

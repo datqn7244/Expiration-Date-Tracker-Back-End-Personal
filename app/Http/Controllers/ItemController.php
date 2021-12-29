@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Item;
+use App\Models\Product;
 
-class ItemController extends Controller
+class ItemController extends ApiController
 {
 	/**
 	 * Display a listing of the resource.
@@ -15,30 +16,27 @@ class ItemController extends Controller
 	 */
 	public function index(Request $request)
 	{
-		$page = $request->query('page') ? intval($request->query('page')) : 0;
+		// $page = $request->query('page') ? intval($request->query('page')) : 0;
 		$sort = $request->query('sort') ? $request->query('sort') : 'exp-asc';
-		$query = Item::select();
-		switch ($sort) {
-			case 'name-asc':
-				$query = $query->orderBy('name', 'asc');
-				break;
-			case 'name-desc':
-				$query = $query->orderBy('name', 'desc');
-				break;
-			case 'exp-asc':
-				$query = $query->latest('expire_date');
-				break;
-			case 'exp-desc':
-				$query = $query->latest('expire_date');
-				break;
-			case 'price-asc':
-				$query = $query->orderBy('price', 'asc');
-				break;
-			case 'price-desc':
-				$query = $query->orderBy('price', 'desc');
-				break;
+		$query = Item::select('items.*')->join('products', 'products.id', '=', 'items.product_id');
+		foreach (explode(",", $sort) as $sortBy) {
+			$query = match ($sortBy) {
+				'name-asc' => $query->orderBy('products.name', 'asc'),
+				'name-desc' => $query->orderBy('products.name', 'desc'),
+				'exp-asc' => $query->oldest('expire_date'),
+				'exp-desc' => $query->latest('expire_date'),
+				// 'price-asc' => $query->orderBy('price', 'asc'),
+				// 'price-desc' => $query->orderBy('price', 'desc'),
+			};
 		}
-		return $query->skip($page * 10)->take(10)->get();
+
+		$items = $query->paginate(10);
+		// skip($page * 10)->take(10)->get();
+		foreach ($items as $item) {
+			$item->product->category;
+			$item->tag;
+		}
+		return $this->successResponse($items);
 	}
 
 	/**
@@ -49,9 +47,20 @@ class ItemController extends Controller
 	 */
 	public function store(Request $request)
 	{
-		$request->validate([
-			'product_id' => 'required',
-		]);
+		if ($request->input('product_id')) {
+			$request->validate([
+				'product_id' => 'required',
+			]);
+		} else {
+			$request->validate([
+				'name' => 'required|unique:products',
+				'barcode' => 'unique:products',
+				'category_id' => 'required'
+			]);
+
+			$product = Product::create($request->all());
+			$request->merge(['product_id' => $product->id]);
+		}
 		if (!$request->input('expire_date')) {
 			$request->merge([
 				'expire_date' => today()
@@ -68,7 +77,16 @@ class ItemController extends Controller
 	 */
 	public function show($id)
 	{
-		return Item::find($id);
+		$item =  Item::find($id);
+		if ($item) {
+			$item->product->category;
+			$item->tag;
+			return $item;
+		}
+		return [
+			'status' => 'error',
+			'message' => 'Item not found'
+		];
 	}
 
 	/**
@@ -80,6 +98,10 @@ class ItemController extends Controller
 	 */
 	public function update(Request $request, $id)
 	{
+		$request->validate([
+			'product_id' => 'required',
+			'expire_date' => 'required',
+		]);
 		$item = Item::find($id);
 
 		$item->update($request->all());

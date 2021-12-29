@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -40,28 +41,36 @@ class UserController extends Controller
 			'email' => 'required|string',
 			'password' => 'required|string'
 		]);
-
+		// Token base
 		// Check email
-		$user = User::where('email', $field['email'])->first();
+		// $user = User::where('email', $field['email'])->first();
 
-		// Check password
-		if (!$user || !Hash::check($field['password'], $user->password)) {
-			return response([
-				'message' => 'Wrong email or password!'
-			]);
+		// // Check password
+		// if (!$user || !Hash::check($field['password'], $user->password)) {
+		// 	return response([
+		// 		'message' => 'Wrong email or password!'
+		// 	]);
+		// }
+
+		// $token = $user->createToken('myapptoken')->plainTextToken;
+
+		// $response = [
+		// 	'user' => [
+		// 		'name' => $user->name,
+		// 		'email' => $user->email
+		// 	],
+		// 	'token' => $token
+		// ];
+
+		// return response($response, 201);
+
+		if (Auth::guard()->attempt($request->only('email', 'password'))) {
+			$request->session()->regenerate();
+
+			return response()->json([], 204);
 		}
 
-		$token = $user->createToken('myapptoken')->plainTextToken;
-
-		$response = [
-			'user' => [
-				'name' => $user->name,
-				'email' => $user->email
-			],
-			'token' => $token
-		];
-
-		return response($response, 201);
+		return response()->json(['error' => 'Invalid credentials']);
 	}
 
 	public function changePassword(Request $request, User $user)
@@ -97,12 +106,22 @@ class UserController extends Controller
 		return response($response, 201);
 	}
 
-	public function logout(User $user)
+	// public function logout(User $user)
+	public function logout(Request $request)
 	{
-		$user->tokens()->delete();
+		// Token base
+		// $user->tokens()->delete();
 
-		return [
-			'message' => 'Logged out'
-		];
+		// return [
+		// 	'message' => 'Logged out'
+		// ];
+
+		Auth::guard('web')->logout();
+
+		$request->session()->invalidate();
+
+		$request->session()->regenerateToken();
+
+		return response()->json([], 204);
 	}
 }

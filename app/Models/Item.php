@@ -16,11 +16,11 @@ class Item extends Model
 		'quantity_unit'
 	];
 
-	public function products()
+	public function product()
 	{
 		return $this->belongsTo(Product::class);
 	}
-	public function tags()
+	public function tag()
 	{
 		return $this->belongsTo(Tag::class);
 	}

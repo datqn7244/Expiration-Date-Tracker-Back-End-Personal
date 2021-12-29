@@ -27,11 +27,9 @@ class CategoryController extends Controller
 	{
 		$request->validate([
 			'name' => 'required|unique:categories',
-			'expire_warning_limit' => 'required',
 			'first_default_notification' => 'required',
 			'second_default_notification' => 'required',
-			'third_default_notification' => 'required',
-			'position' => 'required',
+			'third_default_notification' => 'required'
 		]);
 
 		return Category::create($request->all());
@@ -59,7 +57,7 @@ class CategoryController extends Controller
 	{
 		$category = Category::find($id);
 
-		$category->update($request->all());
+		$category->update($request->validated());
 		return $category;
 	}
 

@@ -21,7 +21,6 @@ class ProductController extends ApiController
 		if ($barcode) {
 			return Product::where('barcode', $barcode)->get();
 		}
-		$query = Product::where('name', 'like', "%{$name}%");
 
 		return Product::where('name', 'like', "%{$name}%")->get();
 	}
