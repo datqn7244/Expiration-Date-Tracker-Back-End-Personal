@@ -16,11 +16,9 @@ class CreateCategoriesTable extends Migration
 		Schema::create('categories', function (Blueprint $table) {
 			$table->id();
 			$table->string('name');
-			$table->integer('expire_warning_limit');
 			$table->integer('first_default_notification');
 			$table->integer('second_default_notification');
 			$table->integer('third_default_notification');
-			$table->integer('position');
 			$table->string('color');
 			$table->timestamps();
 		});
