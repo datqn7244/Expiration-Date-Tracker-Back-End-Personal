@@ -24,14 +24,18 @@ class UserController extends Controller
 			'password' => bcrypt($field['password']),
 		]);
 
-		$token = $user->createToken('myapptoken')->plainTextToken;
+		// $token = $user->createToken('myapptoken')->plainTextToken;
 
-		$response = [
-			'user' => $user,
-			'token' => $token
-		];
+		// $response = [
+		// 	'user' => $user,
+		// 	'token' => $token
+		// ];
 
-		return response($response, 201);
+		// return response($response, 201);
+		$request->session()->regenerate();
+
+		return response()->json([], 204);
+
 	}
 
 
