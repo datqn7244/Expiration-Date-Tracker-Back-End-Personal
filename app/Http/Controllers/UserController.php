@@ -24,17 +24,17 @@ class UserController extends Controller
 			'password' => Hash::make($field['password']),
 		]);
 
-		// $token = $user->createToken('myapptoken')->plainTextToken;
+		$token = $user->createToken('myapptoken')->plainTextToken;
 
-		// $response = [
-		// 	'user' => $user,
-		// 	'token' => $token
-		// ];
+		$response = [
+			'user' => $user,
+			'token' => $token
+		];
 
-		// return response($response, 201);
-		$request->session()->regenerate();
+		return response($response, 201);
+		// $request->session()->regenerate();
 
-		return response()->json([], 204);
+		// return response()->json([], 204);
 
 	}
 
@@ -46,8 +46,22 @@ class UserController extends Controller
 			'password' => 'required|string'
 		]);
 		// Token base
+		if (Auth::guard()->attempt($request->only('email', 'password'))) {
+			$user = User::where('email', $field['email'])->first();
+			$token = $user->createToken('myapptoken')->plainTextToken;
+
+			$response = [
+				'user' => [
+					'name' => $user->name,
+					'email' => $user->email
+				],
+				'token' => $token
+			];
+
+			return response($response, 201);
+		}
+
 		// Check email
-		// $user = User::where('email', $field['email'])->first();
 
 		// // Check password
 		// if (!$user || !Hash::check($field['password'], $user->password)) {
@@ -68,11 +82,11 @@ class UserController extends Controller
 
 		// return response($response, 201);
 
-		if (Auth::guard()->attempt($request->only('email', 'password'))) {
-			$request->session()->regenerate();
+		// if (Auth::guard()->attempt($request->only('email', 'password'))) {
+		// 	$request->session()->regenerate();
 
-			return response()->json([], 204);
-		}
+		// 	return response()->json([], 204);
+		// }
 
 		return response()->json(['error' => 'Invalid credentials']);
 	}
@@ -93,7 +107,7 @@ class UserController extends Controller
 			]);
 		}
 		$user->update([
-			'password' => bcrypt($field['password']),
+			'password' => Hash::make($field['password']),
 		]);
 		$user->tokens()->delete();
 
@@ -110,22 +124,22 @@ class UserController extends Controller
 		return response($response, 201);
 	}
 
-	// public function logout(User $user)
-	public function logout(Request $request)
+	public function logout(User $user)
+	// public function logout(Request $request)
 	{
 		// Token base
-		// $user->tokens()->delete();
+		$user->tokens()->delete();
 
-		// return [
-		// 	'message' => 'Logged out'
-		// ];
+		return [
+			'message' => 'Logged out'
+		];
 
-		Auth::guard('web')->logout();
+		// Auth::guard('web')->logout();
 
-		$request->session()->invalidate();
+		// $request->session()->invalidate();
 
-		$request->session()->regenerateToken();
+		// $request->session()->regenerateToken();
 
-		return response()->json([], 204);
+		// return response()->json([], 204);
 	}
 }

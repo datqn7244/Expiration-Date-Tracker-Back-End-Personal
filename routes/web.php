@@ -13,13 +13,3 @@ use App\Http\Controllers\UserController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-// Users Route
-Route::prefix('api/v1/')->group(function () {
-	Route::post('register', [UserController::class, "register"]);
-	Route::post('signin', [UserController::class, "login"]);
-	Route::middleware('auth:sanctum')->group(function () {
-		Route::get('signout', [UserController::class, "logout"]);
-		Route::post('change_password', [UserController::class, "changePassword"]);
-	});
-});

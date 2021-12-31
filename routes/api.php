@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -68,5 +69,14 @@ Route::prefix('/v1/tags')->group(function () {
 		Route::post('/', [TagController::class, 'store']);
 		Route::put('/{tag}', [TagController::class, 'update']);
 		Route::delete('/{tag}', [TagController::class, 'destroy']);
+	});
+});
+// Users Route
+Route::prefix('/v1')->group(function () {
+	Route::post('register', [UserController::class, "register"]);
+	Route::post('signin', [UserController::class, "login"]);
+	Route::middleware('auth:sanctum')->group(function () {
+		Route::get('signout', [UserController::class, "logout"]);
+		Route::post('change_password', [UserController::class, "changePassword"]);
 	});
 });
